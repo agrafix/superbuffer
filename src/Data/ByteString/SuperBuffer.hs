@@ -30,7 +30,7 @@ destroyBuffer (SuperBuffer ptr) = destroy_sbuf ptr
 
 appendBuffer :: SuperBuffer -> BS.ByteString -> IO ()
 appendBuffer (SuperBuffer ptr) bs =
-    BS.useAsCStringLen bs $ \(cstr, len) ->
+    BS.unsafeUseAsCStringLen bs $ \(cstr, len) ->
     append_sbuf ptr cstr (fromIntegral len)
 {-# INLINE appendBuffer #-}
 

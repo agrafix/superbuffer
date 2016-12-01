@@ -26,14 +26,13 @@ void append_sbuf(struct sbuf *buf, const char *value, size_t len)
   if (len == 0) {
     return;
   }
-
   while (buf->currentSize + len > buf->maxSize) {
     // reallocate more memory
     buf->maxSize *= 2;
     buf->contents = (char *)realloc(buf->contents, buf->maxSize);
   }
   char *targetLocation = buf->contents + buf->currentSize;
-  strcpy(targetLocation, value);
+  strncpy(targetLocation, value, len);
   buf->currentSize += len;
 }
 
