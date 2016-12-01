@@ -1,0 +1,51 @@
+-- This file has been generated from package.yaml by hpack version 0.14.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           superbuffer
+version:        0.1.0.0
+synopsis:       Efficiently build a bytestring from smaller chunks
+description:    Efficiently build a bytestring from smaller chunks
+category:       Web
+homepage:       https://github.com/agrafix/superbuffer#readme
+author:         Alexander Thiemann
+maintainer:     mail@athiemann.net
+copyright:      2016 Alexander Thiemann <mail@athiemann.net>
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    package.yaml
+    stack.yaml
+
+library
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  c-sources:
+      cbits/superbuffer.c
+  build-depends:
+      base >= 4.7 && < 5
+    , bytestring
+  exposed-modules:
+      Data.ByteString.SuperBuffer
+  other-modules:
+      Paths_superbuffer
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Test.hs
+  hs-source-dirs:
+      test
+  ghc-options: -Wall
+  cpp-options: -DTest
+  build-depends:
+      base >= 4.7 && < 5
+    , bytestring
+    , HTF
+    , QuickCheck
+    , superbuffer
+  default-language: Haskell2010

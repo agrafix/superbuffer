@@ -1,0 +1,36 @@
+name:                superbuffer
+version:             0.1.0.0
+synopsis:            Efficiently build a bytestring from smaller chunks
+description:         Efficiently build a bytestring from smaller chunks
+homepage:            https://github.com/agrafix/superbuffer#readme
+license:             BSD3
+author:              Alexander Thiemann
+maintainer:          mail@athiemann.net
+copyright:           2016 Alexander Thiemann <mail@athiemann.net>
+category:            Web
+extra-source-files:
+  - README.md
+  - stack.yaml
+  - package.yaml
+
+dependencies:
+  - base >= 4.7 && < 5
+  - bytestring
+
+ghc-options: -Wall
+
+library:
+  source-dirs: src
+  exposed-modules:
+    Data.ByteString.SuperBuffer
+  c-sources: cbits/superbuffer.c
+
+tests:
+  spec:
+    cpp-options: -DTest
+    main: Test.hs
+    source-dirs: test
+    dependencies:
+      - HTF
+      - QuickCheck
+      - superbuffer
