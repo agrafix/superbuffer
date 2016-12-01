@@ -40,12 +40,25 @@ test-suite spec
   main-is: Test.hs
   hs-source-dirs:
       test
-  ghc-options: -Wall
+  ghc-options: -Wall -funfolding-use-threshold=16 -O2 -optc-O3
   cpp-options: -DTest
   build-depends:
       base >= 4.7 && < 5
     , bytestring
     , HTF
     , QuickCheck
+    , superbuffer
+  default-language: Haskell2010
+
+benchmark sbuf-bench
+  type: exitcode-stdio-1.0
+  main-is: Bench.hs
+  hs-source-dirs:
+      bench
+  ghc-options: -Wall -funfolding-use-threshold=16 -O2 -optc-O3
+  build-depends:
+      base >= 4.7 && < 5
+    , bytestring
+    , criterion
     , superbuffer
   default-language: Haskell2010

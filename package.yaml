@@ -34,3 +34,13 @@ tests:
       - HTF
       - QuickCheck
       - superbuffer
+    ghc-options: -funfolding-use-threshold=16 -O2 -optc-O3
+
+benchmarks:
+  sbuf-bench:
+    main: Bench.hs
+    source-dirs: bench
+    dependencies:
+      - criterion
+      - superbuffer
+    ghc-options: -funfolding-use-threshold=16 -O2 -optc-O3

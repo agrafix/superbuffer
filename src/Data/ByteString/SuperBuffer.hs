@@ -18,17 +18,21 @@ newtype SuperBuffer
 
 withBuffer :: Int64 -> (SuperBuffer -> IO a) -> IO a
 withBuffer size = bracket (newBuffer size) destroyBuffer
+{-# INLINE withBuffer #-}
 
 newBuffer :: Int64 -> IO SuperBuffer
 newBuffer size = SuperBuffer <$> new_sbuf (fromIntegral size)
+{-# INLINE newBuffer #-}
 
 destroyBuffer :: SuperBuffer -> IO ()
 destroyBuffer (SuperBuffer ptr) = destroy_sbuf ptr
+{-# INLINE destroyBuffer #-}
 
 appendBuffer :: SuperBuffer -> BS.ByteString -> IO ()
 appendBuffer (SuperBuffer ptr) bs =
     BS.useAsCStringLen bs $ \(cstr, len) ->
     append_sbuf ptr cstr (fromIntegral len)
+{-# INLINE appendBuffer #-}
 
 readBuffer :: SuperBuffer -> IO BS.ByteString
 readBuffer (SuperBuffer ptr) =
@@ -40,6 +44,7 @@ readBuffer (SuperBuffer ptr) =
           do cstr <- read_sbuf ptr sizePtr
              size <- peek sizePtr
              pure (cstr, size)
+{-# INLINE readBuffer #-}
 
 data SBuf
 type SuperBufferP = Ptr SBuf
