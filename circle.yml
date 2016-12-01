@@ -1,0 +1,15 @@
+dependencies:
+  cache_directories:
+    - "~/.stack"
+    - ".stack-work"
+  pre:
+    - wget https://github.com/commercialhaskell/stack/releases/download/v1.2.0/stack-1.2.0-linux-x86_64.tar.gz -O /tmp/stack.tar.gz
+    - tar -C /tmp -xvf /tmp/stack.tar.gz && chmod +x /tmp/stack-1.2.0-linux-x86_64/stack
+    - sudo mv /tmp/stack-1.2.0-linux-x86_64/stack /usr/bin/stack
+  override:
+    - stack setup
+    - stack build --test --only-dependencies
+
+test:
+  override:
+    - stack test --pedantic
