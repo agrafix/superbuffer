@@ -28,7 +28,7 @@ library
   c-sources:
       cbits/superbuffer.c
   build-depends:
-      base >= 4.7 && < 5
+      base >= 4.8 && < 5
     , bytestring < 0.11
   exposed-modules:
       Data.ByteString.SuperBuffer
@@ -44,7 +44,7 @@ test-suite spec
   ghc-options: -Wall -funfolding-use-threshold=16 -O2 -optc-Ofast
   cpp-options: -DTest
   build-depends:
-      base >= 4.7 && < 5
+      base >= 4.8 && < 5
     , bytestring < 0.11
     , HTF < 0.14
     , QuickCheck < 2.10
@@ -58,7 +58,7 @@ benchmark sbuf-bench
       bench
   ghc-options: -Wall -funfolding-use-threshold=16 -O2 -optc-Ofast
   build-depends:
-      base >= 4.7 && < 5
+      base >= 4.8 && < 5
     , bytestring < 0.11
     , criterion < 1.2
     , superbuffer
