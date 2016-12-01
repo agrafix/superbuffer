@@ -1,6 +1,7 @@
 # Haskell SuperBuffer
 
 [![CircleCI](https://circleci.com/gh/agrafix/superbuffer.svg?style=svg)](https://circleci.com/gh/agrafix/superbuffer)
+[![Hackage](https://img.shields.io/hackage/v/superbuffer.svg)](http://hackage.haskell.org/package/superbuffer)
 
 The `superbuffer` packages was designed to efficiently build up bytestrings from `IO` actions producing
 smaller chunks. The goal was to reduce memory overhead as much as possible while still being as fast as possible.
