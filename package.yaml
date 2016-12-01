@@ -34,7 +34,7 @@ tests:
       - HTF
       - QuickCheck
       - superbuffer
-    ghc-options: -funfolding-use-threshold=16 -O2 -optc-O3
+    ghc-options: -funfolding-use-threshold=16 -O2 -optc-Ofast
 
 benchmarks:
   sbuf-bench:
@@ -43,4 +43,4 @@ benchmarks:
     dependencies:
       - criterion
       - superbuffer
-    ghc-options: -funfolding-use-threshold=16 -O2 -optc-O3
+    ghc-options: -funfolding-use-threshold=16 -O2 -optc-Ofast

@@ -39,9 +39,8 @@ mkChunk step chunkSize =
 buildBuf :: Int64 -> Int -> Int -> IO BS.ByteString
 buildBuf bufSize steps chunkSize =
     withBuffer bufSize $ \buf ->
-    do forM_ [0..steps] $ \step ->
-           appendBuffer buf (mkChunk step chunkSize)
-       readBuffer buf
+    forM_ [0..steps] $ \step ->
+    appendBuffer buf (mkChunk step chunkSize)
 
 buildBufBuilder :: Int -> Int -> IO BS.ByteString
 buildBufBuilder steps chunkSize =

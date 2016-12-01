@@ -28,7 +28,6 @@ test_basic =
              appendBuffer buf " Welcome"
              appendBuffer buf " to"
              appendBuffer buf " S U P E R B U F F E R"
-             readBuffer buf
 
 newtype BufferChunks
     = BufferChunks { unBufferChunks :: (Int64, [BS.ByteString]) }
@@ -52,5 +51,4 @@ prop_appendingWorks (BufferChunks (bufSize, chunks)) =
     where
       chunkAction =
           withBuffer bufSize $ \buf ->
-          do forM_ chunks $ appendBuffer buf
-             readBuffer buf
+          forM_ chunks $ appendBuffer buf
