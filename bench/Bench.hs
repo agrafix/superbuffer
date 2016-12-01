@@ -23,13 +23,22 @@ main =
 mkGroup :: String -> Int -> Int -> Benchmark
 mkGroup name steps chunkSize =
     bgroup name
-    [ bench "superbuffer 1024 byte" $ nfIO $ BS.reverse <$> buildBuf 1024 steps chunkSize
-    , bench "superbuffer 8192 byte" $ nfIO $ BS.reverse <$> buildBuf 8192 steps chunkSize
-    , bench "superbuffer 20 megabyte" $ nfIO $ BS.reverse <$> buildBuf (4000 * 5000) steps chunkSize
+    [ bench (bufName iBufSize128) $ nfIO $ BS.reverse <$> buildBuf iBufSize128 steps chunkSize
+    , bench (bufName iBufSize) $ nfIO $ BS.reverse <$> buildBuf iBufSize steps chunkSize
+    , bench (bufName iBufSize2) $ nfIO $ BS.reverse <$> buildBuf iBufSize2 steps chunkSize
+    , bench (bufName iBufSize4) $ nfIO $ BS.reverse <$> buildBuf iBufSize4 steps chunkSize
+    , bench (bufName iBufSizeAll) $ nfIO $ BS.reverse <$> buildBuf iBufSizeAll steps chunkSize
     , bench "bytestring builder" $ nfIO $ BS.reverse <$> buildBufBuilder steps chunkSize
     , bench "bytestring fromChunks" $ nfIO $ BS.reverse <$> buildBufChunks steps chunkSize
     , bench "bytestring concat" $ nfIO $ BS.reverse <$> buildBufConcat steps chunkSize
     ]
+    where
+      bufName is = "superbuffer (init=" ++ show is ++ " bytes)"
+      iBufSize128 = 128
+      iBufSize = fromIntegral chunkSize
+      iBufSize2 = 2 * fromIntegral chunkSize
+      iBufSize4 = 4 * fromIntegral chunkSize
+      iBufSizeAll = fromIntegral $ steps * chunkSize
 
 mkChunk :: Int -> Int -> BS.ByteString
 mkChunk step chunkSize =
