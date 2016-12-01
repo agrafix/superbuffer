@@ -5,7 +5,7 @@
 name:           superbuffer
 version:        0.1.0.0
 synopsis:       Efficiently build a bytestring from smaller chunks
-description:    Efficiently build a bytestring from smaller chunks
+description:    Efficiently (both fast and memory efficient) build a bytestring from smaller chunks
 category:       Web
 homepage:       https://github.com/agrafix/superbuffer#readme
 author:         Alexander Thiemann
@@ -18,6 +18,7 @@ cabal-version:  >= 1.10
 
 extra-source-files:
     package.yaml
+    README.md
     stack.yaml
 
 library

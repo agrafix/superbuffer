@@ -2,7 +2,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.ByteString.SuperBuffer
-    ( SuperBuffer, appendBuffer, withBuffer
+    ( SuperBuffer, withBuffer, appendBuffer
     )
 where
 
@@ -14,9 +14,18 @@ import Data.Coerce
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Unsafe as BS
 
+-- | The buffer. Internally only a pointer to a C struct. Don't worry,
+-- this module attempts to make usage of the SuperBuffer as safe as possible  in
+-- terms of memory leaks (with exceptions).
 newtype SuperBuffer
     = SuperBuffer SuperBufferP
 
+-- | Allocate a new buffer with a given initial size. The perfect starting point
+-- depends on the expected total size and the average size for a single chunk
+-- written with 'appendBuffer'. You can always start with 1024 and optimize from
+-- there with benchmarks. Please note that the SuperBuffer will no longer be
+-- valid after this function terminates, so do NOT pass it to some other
+-- thread without waiting for it to finish in the action.
 withBuffer :: Int64 -> (SuperBuffer -> IO ()) -> IO BS.ByteString
 withBuffer size action =
     bracket (newBuffer size) destroyBuffer $ \buf ->
@@ -33,6 +42,11 @@ newBuffer :: Int64 -> IO SuperBuffer
 newBuffer size = SuperBuffer <$> new_sbuf (fromIntegral size)
 {-# INLINE newBuffer #-}
 
+
+-- | Write a bytestring to the buffer and grow the buffer if needed. Note that only
+-- one thread at any given time may call this function, so if you are sharing the
+-- 'SuperBuffer' between threads make sure you place some type of guarding/locking around
+-- this function.
 appendBuffer :: SuperBuffer -> BS.ByteString -> IO ()
 appendBuffer (SuperBuffer ptr) bs =
     BS.unsafeUseAsCStringLen bs $ \(cstr, len) ->
