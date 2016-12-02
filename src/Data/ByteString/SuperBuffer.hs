@@ -16,7 +16,7 @@ import qualified Data.ByteString.Unsafe as BS
 
 -- | The buffer. Internally only a pointer to a C struct. Don't worry,
 -- this module attempts to make usage of the SuperBuffer as safe as possible  in
--- terms of memory leaks (with exceptions).
+-- terms of memory leaks (even when exceptions occur).
 newtype SuperBuffer
     = SuperBuffer SuperBufferP
 
