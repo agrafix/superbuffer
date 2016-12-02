@@ -33,6 +33,7 @@ tests:
     dependencies:
       - HTF < 0.14
       - QuickCheck < 2.10
+      - async
       - superbuffer
     ghc-options: -funfolding-use-threshold=16 -O2 -optc-Ofast
 
@@ -44,4 +45,5 @@ benchmarks:
       - criterion < 1.2
       - superbuffer
       - buffer-builder
+      - async
     ghc-options: -funfolding-use-threshold=16 -O2 -optc-Ofast

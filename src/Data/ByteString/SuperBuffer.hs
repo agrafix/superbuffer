@@ -2,15 +2,15 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.ByteString.SuperBuffer
-    ( SuperBuffer, withBuffer, appendBuffer
+    ( SuperBuffer, withBuffer, appendBuffer, appendBufferT
     )
 where
 
+import Control.Concurrent.MVar
+import Control.Exception
+import Data.Coerce
 import Foreign
 import Foreign.C
-import Control.Exception
-
-import Data.Coerce
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Unsafe as BS
 
@@ -18,7 +18,7 @@ import qualified Data.ByteString.Unsafe as BS
 -- this module attempts to make usage of the SuperBuffer as safe as possible  in
 -- terms of memory leaks (even when exceptions occur).
 newtype SuperBuffer
-    = SuperBuffer SuperBufferP
+    = SuperBuffer (SuperBufferP, MVar ())
 
 -- | Allocate a new buffer with a given initial size. The perfect starting point
 -- depends on the expected total size and the average size for a single chunk
@@ -39,32 +39,39 @@ withBuffer size action =
 {-# INLINE withBuffer #-}
 
 newBuffer :: Int64 -> IO SuperBuffer
-newBuffer size = SuperBuffer <$> new_sbuf (fromIntegral size)
+newBuffer size = SuperBuffer <$> ((,) <$> new_sbuf (fromIntegral size) <*> newEmptyMVar)
 {-# INLINE newBuffer #-}
 
 
 -- | Write a bytestring to the buffer and grow the buffer if needed. Note that only
--- one thread at any given time may call this function, so if you are sharing the
--- 'SuperBuffer' between threads make sure you place some type of guarding/locking around
--- this function.
+-- one thread at any given time may call this function. Use 'appendBufferT' when
+-- accessing 'SuperBuffer' from multiple threads.
 appendBuffer :: SuperBuffer -> BS.ByteString -> IO ()
-appendBuffer (SuperBuffer ptr) bs =
+appendBuffer (SuperBuffer (ptr, _)) bs =
     BS.unsafeUseAsCStringLen bs $ \(cstr, len) ->
     append_sbuf ptr cstr (fromIntegral len)
 {-# INLINE appendBuffer #-}
 
+-- | Write a bytestring to the buffer and grow the buffer if needed. This function
+-- can be used accross different threads, but is slower than 'appendBuffer'.
+appendBufferT :: SuperBuffer -> BS.ByteString -> IO ()
+appendBufferT buf@(SuperBuffer (_, lock)) bs =
+    bracket_ (putMVar lock ()) (takeMVar lock) $
+    appendBuffer buf bs
+{-# INLINE appendBufferT #-}
+
 destroyBuffer :: SuperBuffer -> IO ()
-destroyBuffer (SuperBuffer ptr) = destroy_sbuf ptr
+destroyBuffer (SuperBuffer (ptr, _)) = destroy_sbuf ptr
 {-# INLINE destroyBuffer #-}
 
 destroyBufferContents :: SuperBuffer -> IO ()
-destroyBufferContents (SuperBuffer ptr) = destroyContents_sbuf ptr
+destroyBufferContents (SuperBuffer (ptr, _)) = destroyContents_sbuf ptr
 {-# INLINE destroyBufferContents #-}
 
 -- | Read the final buffer contents. This must only
 -- be called once
 readBuffer :: SuperBuffer -> IO BS.ByteString
-readBuffer (SuperBuffer ptr) =
+readBuffer (SuperBuffer (ptr, _)) =
     do (cstr, size) <- readLocal
        BS.unsafePackCStringFinalizer (coerce cstr) (fromIntegral size) (free cstr)
     where

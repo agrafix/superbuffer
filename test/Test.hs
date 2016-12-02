@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
+import Control.Concurrent.Async
 import Control.Monad
 import Data.ByteString.SuperBuffer
 import Data.Int
@@ -28,6 +29,30 @@ test_basic =
              appendBuffer buf " Welcome"
              appendBuffer buf " to"
              appendBuffer buf " S U P E R B U F F E R"
+
+test_nullContained :: IO ()
+test_nullContained =
+    do bs <- fillBuf
+       assertEqual bs expected
+    where
+      expected =
+          "hello\0world"
+      fillBuf =
+          withBuffer 8 $ \buf ->
+          do appendBuffer buf "hello"
+             appendBuffer buf "\0world"
+
+test_threaded :: IO ()
+test_threaded =
+    do bs <- fillBuf
+       assertEqual bs expected
+    where
+      expected =
+          "hello world! Welcome to S U P E R B U F F E R"
+      fillBuf =
+          withBuffer 8 $ \buf ->
+          forConcurrently_ ["hello", " world", "!", " Welcome", " to", " S U P E R B U F F E R"] $
+          appendBufferT buf
 
 newtype BufferChunks
     = BufferChunks { unBufferChunks :: (Int64, [BS.ByteString]) }
