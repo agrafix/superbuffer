@@ -62,4 +62,5 @@ benchmark sbuf-bench
     , bytestring < 0.11
     , criterion < 1.2
     , superbuffer
+    , buffer-builder
   default-language: Haskell2010

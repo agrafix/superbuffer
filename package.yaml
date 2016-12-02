@@ -43,4 +43,5 @@ benchmarks:
     dependencies:
       - criterion < 1.2
       - superbuffer
+      - buffer-builder
     ghc-options: -funfolding-use-threshold=16 -O2 -optc-Ofast
