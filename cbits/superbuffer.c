@@ -39,6 +39,10 @@ void append_sbuf(struct sbuf *buf, const char *value, const size_t len)
 
 char *read_sbuf(struct sbuf *buf, size_t *len)
 {
+  if (buf->currentSize < buf->maxSize) {
+    buf->contents = (char *)realloc(buf->contents, buf->currentSize);
+    buf->maxSize = buf->currentSize; // not strictly needed, but for consistency
+  }
   *len = buf->currentSize;
   return buf->contents;
 }
