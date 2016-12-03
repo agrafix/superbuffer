@@ -27,11 +27,11 @@ void append_sbuf(struct sbuf *buf, const char *value, const size_t len)
     return;
   }
   const size_t nextSize = buf->currentSize + len;
-  while (nextSize > buf->maxSize) {
-    // reallocate more memory
-    buf->maxSize = buf->maxSize + (buf->maxSize >> 1);
+  if (nextSize > buf->maxSize) {
+    buf->maxSize = nextSize + (nextSize >> 1);
     buf->contents = (char *)realloc(buf->contents, buf->maxSize);
   }
+
   char *targetLocation = buf->contents + buf->currentSize;
   memcpy(targetLocation, value, len);
   buf->currentSize = nextSize;
