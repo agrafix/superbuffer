@@ -5,6 +5,7 @@ import Control.Monad
 import Criterion
 import Criterion.Main
 import Data.ByteString.SuperBuffer
+import qualified Data.ByteString.SuperBuffer.Pure as P
 import Data.Int
 import qualified Data.BufferBuilder as BB
 import qualified Data.ByteString as BS
@@ -26,6 +27,8 @@ mkGroup name steps chunkSize =
     bgroup name $
     mkSizedGroup steps chunkSize bufName buildBuf
     ++ mkSizedGroup steps chunkSize bufNameT buildBufT
+    ++ mkSizedGroup steps chunkSize bufNameP buildBufP
+    ++ mkSizedGroup steps chunkSize bufNamePT buildBufPT
     ++ mkSizedGroup steps chunkSize bufBBName buildBufBB
     ++
     [ bench "bytestring builder" $ nfIO $ BS.reverse <$> buildBufBuilder steps chunkSize
@@ -36,6 +39,8 @@ mkGroup name steps chunkSize =
       bufBBName is = "buffer-builder (init=" ++ show is ++ " bytes, trim=yes)"
       bufName is = "superbuffer (init=" ++ show is ++ " bytes)"
       bufNameT is = "superbuffer (init=" ++ show is ++ " bytes, threadsafe, 2 concurrent writes)"
+      bufNameP is = "superbuffer (pure haskell, init=" ++ show is ++ " bytes)"
+      bufNamePT is = "superbuffer (pure haskell, init=" ++ show is ++ " bytes, threadsafe, 2 concurrent writes)"
 
 mkSizedGroup ::
     Int -> Int -> (Int64 -> String) -> (Int64 -> Int -> Int -> IO BS.ByteString) -> [Benchmark]
@@ -71,6 +76,23 @@ buildBufT bufSize steps chunkSize =
     concurrently_
        (appendBufferT buf (mkChunk step chunkSize))
        (appendBufferT buf (mkChunk step chunkSize))
+    where
+      halfSteps :: Double
+      halfSteps = fromIntegral steps / 2.0
+
+buildBufP :: Int64 -> Int -> Int -> IO BS.ByteString
+buildBufP bufSize steps chunkSize =
+    P.withBuffer (fromIntegral bufSize) $ \buf ->
+    forM_ [0..steps] $ \step ->
+    P.appendBuffer buf (mkChunk step chunkSize)
+
+buildBufPT :: Int64 -> Int -> Int -> IO BS.ByteString
+buildBufPT bufSize steps chunkSize =
+    P.withBuffer (fromIntegral bufSize) $ \buf ->
+    forM_ [0..(ceiling halfSteps)] $ \step ->
+    concurrently_
+       (P.appendBufferT buf (mkChunk step chunkSize))
+       (P.appendBufferT buf (mkChunk step chunkSize))
     where
       halfSteps :: Double
       halfSteps = fromIntegral steps / 2.0

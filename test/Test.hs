@@ -7,6 +7,7 @@ import Control.Monad
 import Data.ByteString.SuperBuffer
 import Data.Int
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.SuperBuffer.Pure as P
 
 import Test.Framework
 import Test.QuickCheck.Monadic
@@ -77,3 +78,53 @@ prop_appendingWorks (BufferChunks (bufSize, chunks)) =
       chunkAction =
           withBuffer bufSize $ \buf ->
           forM_ chunks $ appendBuffer buf
+
+test_basicPure :: IO ()
+test_basicPure =
+    do bs <- fillBuf
+       assertEqual bs expected
+    where
+      expected =
+          "hello world! Welcome to S U P E R B U F F E R"
+      fillBuf =
+          P.withBuffer 8 $ \buf ->
+          do P.appendBuffer buf "hello"
+             P.appendBuffer buf " world"
+             P.appendBuffer buf "!"
+             P.appendBuffer buf " Welcome"
+             P.appendBuffer buf " to"
+             P.appendBuffer buf " S U P E R B U F F E R"
+
+test_nullContainedPure :: IO ()
+test_nullContainedPure =
+    do bs <- fillBuf
+       assertEqual bs expected
+    where
+      expected =
+          "hello\0world"
+      fillBuf =
+          P.withBuffer 8 $ \buf ->
+          do P.appendBuffer buf "hello"
+             P.appendBuffer buf "\0world"
+
+test_threadedPure :: IO ()
+test_threadedPure =
+    do bs <- fillBuf
+       assertEqual bs expected
+    where
+      expected =
+          "hello world! Welcome to S U P E R B U F F E R"
+      fillBuf =
+          P.withBuffer 8 $ \buf ->
+          forConcurrently_ ["hello", " world", "!", " Welcome", " to", " S U P E R B U F F E R"] $
+          P.appendBufferT buf
+
+prop_appendingWorksPure :: BufferChunks -> Property
+prop_appendingWorksPure (BufferChunks (bufSize, chunks)) =
+    monadicIO $
+    do out <- run chunkAction
+       assert $ out == BS.concat chunks
+    where
+      chunkAction =
+          P.withBuffer (fromIntegral bufSize) $ \buf ->
+          forM_ chunks $ P.appendBuffer buf
