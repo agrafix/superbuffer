@@ -1,16 +1,16 @@
--- This file has been generated from package.yaml by hpack version 0.14.0.
+-- This file has been generated from package.yaml by hpack version 0.15.0.
 --
 -- see: https://github.com/sol/hpack
 
 name:           superbuffer
-version:        0.3.0.0
+version:        0.3.1.0
 synopsis:       Efficiently build a bytestring from smaller chunks
 description:    Efficiently (both fast and memory efficient) build a bytestring from smaller chunks
 category:       Web
 homepage:       https://github.com/agrafix/superbuffer#readme
 author:         Alexander Thiemann
 maintainer:     mail@athiemann.net
-copyright:      2016 Alexander Thiemann <mail@athiemann.net>
+copyright:      2016 - 2017 Alexander Thiemann <mail@athiemann.net>
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple

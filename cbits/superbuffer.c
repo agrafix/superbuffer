@@ -56,3 +56,8 @@ void destroy_sbuf(struct sbuf *buf)
 {
   free(buf);
 }
+
+size_t size_sbuf(struct sbuf *buf)
+{
+  return buf->currentSize;
+}

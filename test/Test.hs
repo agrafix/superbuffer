@@ -15,6 +15,14 @@ import Test.QuickCheck.Monadic
 main :: IO ()
 main = htfMain htf_thisModulesTests
 
+test_size :: IO ()
+test_size =
+    void $
+    withBuffer 8 $ \buf ->
+    do appendBuffer buf "hello"
+       sz <- size buf
+       assertEqual sz 5
+
 test_basic :: IO ()
 test_basic =
     do bs <- fillBuf
@@ -78,6 +86,14 @@ prop_appendingWorks (BufferChunks (bufSize, chunks)) =
       chunkAction =
           withBuffer bufSize $ \buf ->
           forM_ chunks $ appendBuffer buf
+
+test_sizePure :: IO ()
+test_sizePure =
+    void $
+    P.withBuffer 8 $ \buf ->
+    do P.appendBuffer buf "hello"
+       sz <- P.size buf
+       assertEqual sz 5
 
 test_basicPure :: IO ()
 test_basicPure =

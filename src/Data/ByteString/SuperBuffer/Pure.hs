@@ -1,5 +1,5 @@
 module Data.ByteString.SuperBuffer.Pure
-    ( SuperBuffer, withBuffer, appendBuffer, appendBufferT )
+    ( SuperBuffer, withBuffer, appendBuffer, appendBufferT, size )
 where
 
 import Control.Concurrent.MVar
@@ -29,8 +29,8 @@ data SuperBuffer
 -- valid after this function terminates, so do NOT pass it to some other
 -- thread without waiting for it to finish in the action.
 withBuffer :: Int -> (SuperBuffer -> IO ()) -> IO BS.ByteString
-withBuffer size action =
-    do ptr <- mallocBytes size
+withBuffer sz action =
+    do ptr <- mallocBytes sz
        ptrRef <- newIORef ptr
        go ptrRef `onException` freeOnException ptrRef
     where
@@ -39,7 +39,7 @@ withBuffer size action =
                free ptr
         go ptrRef =
             do sizeRef <- newIORef 0
-               maxSizeRef <- newIORef size
+               maxSizeRef <- newIORef sz
                lock <- newEmptyMVar
                let sb = SuperBuffer ptrRef sizeRef maxSizeRef lock
                action sb
@@ -93,3 +93,8 @@ readBuffer sb =
            else pure buff
        BS.unsafePackCStringFinalizer finalPtr currentSize (free finalPtr)
 {-# INLINE readBuffer #-}
+
+-- | Get current (filled) size of the buffer
+size :: SuperBuffer -> IO Int
+size sb = readIORef $ sb_currentSize sb
+{-# INLINE size #-}
