@@ -1,5 +1,5 @@
 name:                superbuffer
-version:             0.3.1.0
+version:             0.3.1.1
 synopsis:            Efficiently build a bytestring from smaller chunks
 description:         Efficiently (both fast and memory efficient) build a bytestring from smaller chunks
 homepage:            https://github.com/agrafix/superbuffer#readme
@@ -43,7 +43,7 @@ benchmarks:
     main: Bench.hs
     source-dirs: bench
     dependencies:
-      - criterion < 1.2
+      - criterion < 1.3
       - superbuffer
       - buffer-builder
       - async
