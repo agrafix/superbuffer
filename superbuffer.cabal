@@ -1,18 +1,18 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 
 name:           superbuffer
-version:        0.3.1.1
+version:        0.3.1.2
 synopsis:       Efficiently build a bytestring from smaller chunks
 description:    Efficiently (both fast and memory efficient) build a bytestring from smaller chunks
 category:       Web
 homepage:       https://github.com/agrafix/superbuffer#readme
 author:         Alexander Thiemann
 maintainer:     mail@athiemann.net
-copyright:      2016 - 2017 Alexander Thiemann <mail@athiemann.net>
+copyright:      2016 - 2022 Alexander Thiemann <mail@athiemann.net>
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -22,6 +22,11 @@ extra-source-files:
     package.yaml
 
 library
+  exposed-modules:
+      Data.ByteString.SuperBuffer
+      Data.ByteString.SuperBuffer.Pure
+  other-modules:
+      Paths_superbuffer
   hs-source-dirs:
       src
   ghc-options: -Wall
@@ -30,11 +35,6 @@ library
   build-depends:
       base >=4.8 && <5
     , bytestring <0.12
-  exposed-modules:
-      Data.ByteString.SuperBuffer
-      Data.ByteString.SuperBuffer.Pure
-  other-modules:
-      Paths_superbuffer
   default-language: Haskell2010
 
 test-suite spec
