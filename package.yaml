@@ -1,12 +1,12 @@
 name:                superbuffer
-version:             0.3.1.1
+version:             0.3.1.2
 synopsis:            Efficiently build a bytestring from smaller chunks
 description:         Efficiently (both fast and memory efficient) build a bytestring from smaller chunks
 homepage:            https://github.com/agrafix/superbuffer#readme
 license:             BSD3
 author:              Alexander Thiemann
 maintainer:          mail@athiemann.net
-copyright:           2016 - 2017 Alexander Thiemann <mail@athiemann.net>
+copyright:           2016 - 2022 Alexander Thiemann <mail@athiemann.net>
 category:            Web
 extra-source-files:
   - README.md
